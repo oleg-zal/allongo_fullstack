@@ -22,6 +22,7 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
     const [cartSubtotal, setCartSubtotal] = useState(0);
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const [orderButtonMessage, setOrderButtonMessage] = useState('Mark as delivered');
+    const [cartItems, setCartItems] = useState([]);
 
     useEffect(() => {
        getOrder(id)
@@ -35,6 +36,7 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
               setOrderButtonMessage("Order is finished");
               setButtonDisabled(true);
           }
+          setCartItems(order.cartItems);
        })
        .catch(er => console.log(er.response.data.message ? er.response.data.message : er.response.data))
     }, [isDelivered, id])
@@ -76,8 +78,8 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
           <br />
           <h2>Order items</h2>
           <ListGroup variant="flush">
-            {Array.from({ length: 3 }).map((item, idx) => (
-              <CartItemComponent key={idx} />
+            {cartItems.map((item, idx) => (
+              <CartItemComponent key={idx} item={item} orderCreated={true} />
             ))}
           </ListGroup>
         </Col>

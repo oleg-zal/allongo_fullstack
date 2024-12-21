@@ -4,11 +4,17 @@ import AdminLinksComponent from "../../../components/admin/AdminLinksComponent";
 
 import { useState, useEffect } from "react";
 
-const UsersPageComponent = ({ fetchUsers }) => {
+const UsersPageComponent = ({ fetchUsers, deleteUser }) => {
   const [users, setUsers] = useState([]);
+  const [userDeleted, setUserDeleted] = useState(false);
 
-  const deleteHandler = () => {
-    if (window.confirm("Are you sure?")) alert("User deleted!");
+  const deleteHandler = async (userId) => {
+    if (window.confirm("Are you sure?")) {
+        const data  = await deleteUser(userId);
+        if(data === 'user removed') {
+            setUserDeleted(!userDeleted)
+        }
+    }
   };
 
   useEffect(() => {
@@ -21,7 +27,7 @@ const UsersPageComponent = ({ fetchUsers }) => {
         )
       );
     return () => abctrl.abort();
-  }, []);
+  }, [userDeleted]);
 
   return (
     <Row className="m-5">
@@ -62,7 +68,7 @@ const UsersPageComponent = ({ fetchUsers }) => {
                     <Button
                       variant="danger"
                       className="btn-sm"
-                      onClick={deleteHandler}
+                      onClick={() => deleteHandler(user._id)}
                     >
                       <i className="bi bi-x-circle"></i>
                     </Button>

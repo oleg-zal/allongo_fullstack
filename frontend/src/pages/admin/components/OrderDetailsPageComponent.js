@@ -9,7 +9,16 @@ import {
 } from "react-bootstrap";
 import CartItemComponent from "../../../components/CartItemComponent";
 
-const OrderDetailsPageComponent = () => {
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+
+const OrderDetailsPageComponent = ({ getOrder }) => {
+    const { id } = useParams();
+    useEffect(() => {
+       getOrder(id)
+       .then((items) => console.log(items))
+       .catch(er => console.log(er.response.data.message ? er.response.data.message : er.response.data))
+    }, [])
   return (
     <Container fluid>
       <Row className="mt-4">

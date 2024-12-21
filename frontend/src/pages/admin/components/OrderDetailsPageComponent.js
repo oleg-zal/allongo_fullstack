@@ -12,34 +12,41 @@ import CartItemComponent from "../../../components/CartItemComponent";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-const OrderDetailsPageComponent = ({ getOrder }) => {
-    const { id } = useParams();
+const OrderDetailsPageComponent = ({ getOrder, markAsDelivered }) => {
+  const { id } = useParams();
 
-    const [userInfo, setUserInfo] = useState({});
-    const [paymentMethod, setPaymentMethod] = useState("");
-    const [isPaid, setIsPaid] = useState(false);
-    const [isDelivered, setIsDelivered] = useState(false);
-    const [cartSubtotal, setCartSubtotal] = useState(0);
-    const [buttonDisabled, setButtonDisabled] = useState(false);
-    const [orderButtonMessage, setOrderButtonMessage] = useState('Mark as delivered');
-    const [cartItems, setCartItems] = useState([]);
+  const [userInfo, setUserInfo] = useState({});
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [isPaid, setIsPaid] = useState(false);
+  const [isDelivered, setIsDelivered] = useState(false);
+  const [cartSubtotal, setCartSubtotal] = useState(0);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [orderButtonMessage, setOrderButtonMessage] =
+    useState("Mark as delivered");
+  const [cartItems, setCartItems] = useState([]);
 
-    useEffect(() => {
-       getOrder(id)
-       .then((order) => {
-          setUserInfo(order.user); 
-          setPaymentMethod(order.paymentMethod);
-          order.isPaid ? setIsPaid(order.paidAt) : setIsPaid(false);
-          order.isDelivered ? setIsDelivered(order.deliveredAt) : setIsDelivered(false);
-          setCartSubtotal(order.orderTotal.cartSubtotal);
-          if (order.isDelivered) {
-              setOrderButtonMessage("Order is finished");
-              setButtonDisabled(true);
-          }
-          setCartItems(order.cartItems);
-       })
-       .catch(er => console.log(er.response.data.message ? er.response.data.message : er.response.data))
-    }, [isDelivered, id])
+  useEffect(() => {
+    getOrder(id)
+      .then((order) => {
+        setUserInfo(order.user);
+        setPaymentMethod(order.paymentMethod);
+        order.isPaid ? setIsPaid(order.paidAt) : setIsPaid(false);
+        order.isDelivered
+          ? setIsDelivered(order.deliveredAt)
+          : setIsDelivered(false);
+        setCartSubtotal(order.orderTotal.cartSubtotal);
+        if (order.isDelivered) {
+          setOrderButtonMessage("Order is finished");
+          setButtonDisabled(true);
+        }
+        setCartItems(order.cartItems);
+      })
+      .catch((er) =>
+        console.log(
+          er.response.data.message ? er.response.data.message : er.response.data
+        )
+      );
+  }, [isDelivered, id]);
   return (
     <Container fluid>
       <Row className="mt-4">
@@ -50,7 +57,8 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
             <Col md={6}>
               <h2>Shipping</h2>
               <b>Name</b>: {userInfo.name} {userInfo.lastName} <br />
-              <b>Address</b>: {userInfo.address} {userInfo.city} {userInfo.state} {userInfo.zipCode} <br />
+              <b>Address</b>: {userInfo.address} {userInfo.city}{" "}
+              {userInfo.state} {userInfo.zipCode} <br />
               <b>Phone</b>: {userInfo.phoneNumber}
             </Col>
             <Col md={6}>
@@ -64,8 +72,15 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
             </Col>
             <Row>
               <Col>
-                <Alert className="mt-3" variant={isDelivered ? "success" : "danger"}>
-                  {isDelivered ? <>Delivered at {isDelivered}</> : <>Not delivered</>}
+                <Alert
+                  className="mt-3"
+                  variant={isDelivered ? "success" : "danger"}
+                >
+                  {isDelivered ? (
+                    <>Delivered at {isDelivered}</>
+                  ) : (
+                    <>Not delivered</>
+                  )}
                 </Alert>
               </Col>
               <Col>
@@ -89,7 +104,8 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
               <h3>Order summary</h3>
             </ListGroup.Item>
             <ListGroup.Item>
-              Items price (after tax): <span className="fw-bold">${cartSubtotal}</span>
+              Items price (after tax):{" "}
+              <span className="fw-bold">${cartSubtotal}</span>
             </ListGroup.Item>
             <ListGroup.Item>
               Shipping: <span className="fw-bold">included</span>
@@ -102,7 +118,21 @@ const OrderDetailsPageComponent = ({ getOrder }) => {
             </ListGroup.Item>
             <ListGroup.Item>
               <div className="d-grid gap-2">
-                <Button size="lg" disabled={buttonDisabled} variant="danger" type="button">
+                <Button
+                  size="lg"
+                  onClick={() => 
+                    markAsDelivered(id)
+                    .then((res) => {
+                       if (res) {
+                          setIsDelivered(true); 
+                       } 
+                    })
+                    .catch(er => console.log(er.response.data.message ? er.response.data.message : er.response.data))
+                  }
+                  disabled={buttonDisabled}
+                  variant="danger"
+                  type="button"
+                >
                   {orderButtonMessage}
                 </Button>
               </div>

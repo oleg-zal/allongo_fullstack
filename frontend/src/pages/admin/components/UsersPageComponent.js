@@ -4,18 +4,15 @@ import AdminLinksComponent from "../../../components/admin/AdminLinksComponent";
 
 import { useState, useEffect } from "react";
 
-const UsersPageComponent = () => {
-  const [counter, setCounter] = useState(0);
+const UsersPageComponent = ({fetchUsers}) => {
+  const [users, setUsers] = useState([]);
 
   const deleteHandler = () => {
-      setCounter(counter + 1);
-    // if (window.confirm("Are you sure?")) alert("User deleted!");
+    if (window.confirm("Are you sure?")) alert("User deleted!");
   };
 
   useEffect(() => {
-      console.log("useEffect called");
-      setCounter(counter + 1)
-      return () => console.log("cleanup the effect");
+     fetchUsers().then(res => setUsers(res)); 
   },[])
 
   return (
@@ -24,8 +21,8 @@ const UsersPageComponent = () => {
         <AdminLinksComponent />
       </Col>
       <Col md={10}>
-        <h1>User List {counter}</h1>
-        {console.log("HTML rendered")}
+        <h1>User List</h1>
+        {console.log(users)}
         <Table striped bordered hover responsive>
           <thead>
             <tr>

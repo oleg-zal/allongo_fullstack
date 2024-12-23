@@ -15,10 +15,15 @@ import ImageZoom from "js-image-zoom";
 import { useEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+
 import { addToCart } from "../redux/actions/cartActions";
 
 const ProductDetailsPage = () => {
     const dispatch = useDispatch()
+
+    const {id} = useParams()
+    console.log(id);
 
     const addToCartHandler = () => {
         dispatch(addToCart());

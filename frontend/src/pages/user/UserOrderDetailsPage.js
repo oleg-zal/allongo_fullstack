@@ -8,6 +8,40 @@ const getOrder = async (orderId) => {
     return data;
 }
 
+const loadPayPalScript = () => {
+    loadScript({"client-id": "AbhlMqTdbfjdew9p1RaZnfTCSPA1orXZQr2xSmnVK1xUK34S9pfOqk4SbY-QUINkdnn7DpjtXRBviaZj"})
+    .then(paypal => {
+        paypal
+        .Buttons({
+            createOrder: createPayPalOrderHandler,
+            onCancel: onCancelHandler,
+            onApprove: onApproveHandler,
+            onError: onErrorHandler,
+
+        })
+        .render("#paypal-container-element");
+    })
+    .catch(err => {
+        console.error("failed to load the PayPal JS SDK script", err);
+    })
+}
+
+const createPayPalOrderHandler = function () {
+    console.log("createPayPalOrderHandler");
+}
+
+const onCancelHandler = function () {
+    console.log("cancel");
+}
+
+const onApproveHandler = function () {
+    console.log("onApproveHandler");
+}
+
+const onErrorHandler = function (err) {
+    console.log("error");
+}
+
 const UserOrderDetailsPage = () => {
     const userInfo = useSelector((state) => state.userRegisterLogin.userInfo);
 
@@ -16,7 +50,7 @@ const UserOrderDetailsPage = () => {
         return data;
     }
 
-  return <UserOrderDetailsPageComponent userInfo={userInfo} getUser={getUser} getOrder={getOrder} loadScript={loadScript} />;
+  return <UserOrderDetailsPageComponent userInfo={userInfo} getUser={getUser} getOrder={getOrder} loadPayPalScript={loadPayPalScript} />;
 };
 
 export default UserOrderDetailsPage;

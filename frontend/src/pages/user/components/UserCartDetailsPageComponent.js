@@ -9,7 +9,18 @@ import {
 } from "react-bootstrap";
 import CartItemComponent from "../../../components/CartItemComponent";
 
-const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal}) => {
+const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal,addToCart, removeFromCart, reduxDispatch }) => {
+
+    const changeCount = (productID, count) => {
+        reduxDispatch(addToCart(productID, count));
+    }
+
+    const removeFromCartHandler = (productID, quantity, price) => {
+        if (window.confirm("Are you sure?")) {
+            reduxDispatch(removeFromCart(productID, quantity, price));
+        }
+    }
+
   return (
     <Container fluid>
       <Row className="mt-4">
@@ -49,7 +60,7 @@ const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal}) => 
           <h2>Order items</h2>
           <ListGroup variant="flush">
             {cartItems.map((item, idx) => (
-              <CartItemComponent item={item} key={idx} />
+              <CartItemComponent item={item} key={idx} removeFromCartHandler={removeFromCartHandler} changeCount={changeCount} />
             ))}
           </ListGroup>
         </Col>

@@ -9,10 +9,12 @@ import {
 } from "react-bootstrap";
 import CartItemComponent from "../../../components/CartItemComponent";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-const UserOrderDetailsPageComponent = ({ userInfo, getUser }) => {
+const UserOrderDetailsPageComponent = ({ userInfo, getUser, getOrder }) => {
 
     const [userAddress, setUserAddress] = useState({});
+    const { id } = useParams();
 
     useEffect(() => {
         getUser()
@@ -20,6 +22,14 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser }) => {
            setUserAddress({ address: data.address, city: data.city, country: data.country, zipCode: data.zipCode, state: data.state, phoneNumber: data.phoneNumber }); 
         })
         .catch((err) => console.log(err));
+    }, [])
+
+    useEffect(() => {
+       getOrder(id) 
+       .then(data => {
+           console.log(data);
+       })
+       .catch((err) => console.log(err));
     }, [])
 
   return (

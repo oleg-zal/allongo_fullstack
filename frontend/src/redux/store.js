@@ -18,7 +18,9 @@ const userInfoInLocalStorage = localStorage.getItem("userInfo")
 
 const INITIAL_STATE = {
     cart: {
-
+        cartItems: [],
+        itemsCount: 0,
+        cartSubtotal: 0
     },
     userRegisterLogin: { userInfo: userInfoInLocalStorage }
 }

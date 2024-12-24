@@ -14,6 +14,8 @@ import { useEffect, useState } from "react";
 const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal, userInfo,addToCart, removeFromCart, reduxDispatch , getUser}) => {
 
     const [buttonDisabled, setButtonDisabled] = useState(false);
+    const [userAddress, setUserAddress] = useState(false);
+    const [missingAddress, setMissingAddress] = useState("");
 
     const changeCount = (productID, count) => {
         reduxDispatch(addToCart(productID, count));
@@ -30,6 +32,10 @@ const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal, user
         .then((data) => {
             if (!data.address || !data.city || !data.country || !data.zipCode || !data.state || !data.phoneNumber) {
                 setButtonDisabled(true);
+                setMissingAddress(" .In order to make order, fill out your profile with correct address, city etc.");
+            } else {
+                setUserAddress({address: data.address, city: data.city, country: data.country, zipCode: data.zipCode, state: data.state, phoneNumber: data.phoneNumber})
+                setMissingAddress(false);
             }
         })
         .catch((er) => console.log(er.response.data.message ? er.response.data.message : er.response.data));
@@ -44,8 +50,8 @@ const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal, user
             <Col md={6}>
               <h2>Shipping</h2>
               <b>Name</b>: {userInfo.name} {userInfo.lastName} <br />
-              <b>Address</b>: 8739 Mayflower St. Los Angeles, CA 90063 <br />
-              <b>Phone</b>: 888 777 666
+              <b>Address</b>: {userAddress.address} {userAddress.city} {userAddress.state} {userAddress.zipCode} <br />
+              <b>Phone</b>: {userAddress.phoneNumber}
             </Col>
             <Col md={6}>
               <h2>Payment method</h2>
@@ -59,7 +65,8 @@ const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal, user
             <Row>
               <Col>
                 <Alert className="mt-3" variant="danger">
-                  Not delivered. In order to make order, fill out your profile with correct address, city etc.
+                  Not delivered
+                  {missingAddress}
                 </Alert>
               </Col>
               <Col>

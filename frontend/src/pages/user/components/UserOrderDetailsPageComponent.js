@@ -56,6 +56,18 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser, getOrder }) => {
        .catch((err) => console.log(err));
     }, [])
 
+    const orderHandler = () => {
+        setButtonDisabled(true);
+        if (paymentMethod === "pp") {
+            setOrderButtonMessage("To pay for your order click one of the buttons below");
+            if (!isPaid) {
+                // to do: load PayPal script and do actions
+            }
+        } else {
+            setOrderButtonMessage("Your order was placed. Thank you");
+        }
+    }
+
   return (
     <Container fluid>
       <Row className="mt-4">
@@ -118,7 +130,7 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser, getOrder }) => {
             </ListGroup.Item>
             <ListGroup.Item>
               <div className="d-grid gap-2">
-                <Button size="lg" variant="danger" type="button" disabled={buttonDisabled}>
+                <Button size="lg" onClick={orderHandler} variant="danger" type="button" disabled={buttonDisabled}>
                   {orderButtonMessage}
                 </Button>
               </div>

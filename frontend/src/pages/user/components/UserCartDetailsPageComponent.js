@@ -9,7 +9,11 @@ import {
 } from "react-bootstrap";
 import CartItemComponent from "../../../components/CartItemComponent";
 
+import { useEffect, useState } from "react";
+
 const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal, userInfo,addToCart, removeFromCart, reduxDispatch , getUser}) => {
+
+    const [buttonDisabled, setButtonDisabled] = useState(false);
 
     const changeCount = (productID, count) => {
         reduxDispatch(addToCart(productID, count));
@@ -20,7 +24,16 @@ const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal, user
             reduxDispatch(removeFromCart(productID, quantity, price));
         }
     }
-getUser().then(res => console.log(res))
+
+    useEffect(() => {
+        getUser()
+        .then((data) => {
+            if (!data.address || !data.city || !data.country || !data.zipCode || !data.state || !data.phoneNumber) {
+                setButtonDisabled(true);
+            }
+        })
+        .catch((er) => console.log(er.response.data.message ? er.response.data.message : er.response.data));
+    }, [userInfo._id])
   return (
     <Container fluid>
       <Row className="mt-4">
@@ -83,7 +96,7 @@ getUser().then(res => console.log(res))
             </ListGroup.Item>
             <ListGroup.Item>
               <div className="d-grid gap-2">
-                <Button size="lg" variant="danger" type="button">
+                <Button size="lg" variant="danger" type="button" disabled={buttonDisabled}>
                   Pay for the order
                 </Button>
               </div>

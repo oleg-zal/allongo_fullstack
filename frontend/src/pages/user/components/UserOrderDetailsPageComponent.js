@@ -14,6 +14,14 @@ import { useParams } from "react-router-dom";
 const UserOrderDetailsPageComponent = ({ userInfo, getUser, getOrder }) => {
 
     const [userAddress, setUserAddress] = useState({});
+    const [paymentMethod, setPaymentMethod] = useState("");
+    const [isPaid, setIsPaid] = useState(false);
+    const [orderButtonMessage, setOrderButtonMessage] = useState("");
+    const [cartItems, setCartItems] = useState([]);
+    const [cartSubtotal, setCartSubtotal] = useState(0);
+    const [isDelivered, setIsDelivered] = useState(false);
+    const [buttonDisabled, setButtonDisabled] = useState(false);
+
     const { id } = useParams();
 
     useEffect(() => {
@@ -27,7 +35,23 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser, getOrder }) => {
     useEffect(() => {
        getOrder(id) 
        .then(data => {
-           console.log(data);
+           setPaymentMethod(data.paymentMethod);
+           setCartItems(data.cartItems);
+           setCartSubtotal(data.orderTotal.cartSubtotal);
+           data.isDelivered ? setIsDelivered(data.deliveredAt) : setIsDelivered(false);
+           data.isPaid ? setIsPaid(data.paidAt) : setIsPaid(false);
+           if (data.isPaid) {
+               setOrderButtonMessage("Your order is finished");
+               setButtonDisabled(true);
+           } else {
+              if (data.paymentMethod === "pp") {
+                  setOrderButtonMessage("Pay for your order");
+              } else if(data.paymentMethod === "cod") {
+                  setButtonDisabled(true);
+                  setOrderButtonMessage("Wait for your order. You pay on delivery");
+              }
+           }
+
        })
        .catch((err) => console.log(err));
     }, [])
@@ -47,7 +71,7 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser, getOrder }) => {
             </Col>
             <Col md={6}>
               <h2>Payment method</h2>
-              <Form.Select disabled={false}>
+              <Form.Select value={paymentMethod} disabled={true}>
                 <option value="pp">PayPal</option>
                 <option value="cod">
                   Cash On Delivery (delivery may be delayed)
@@ -56,13 +80,13 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser, getOrder }) => {
             </Col>
             <Row>
               <Col>
-                <Alert className="mt-3" variant="danger">
-                  Not delivered
+                <Alert className="mt-3" variant={isDelivered ? "success" : "danger"}>
+                  {isDelivered ? <>Delivered at {isDelivered}</> : <>Not delivered</>}
                 </Alert>
               </Col>
               <Col>
-                <Alert className="mt-3" variant="success">
-                  Paid on 2022-10-02
+                <Alert className="mt-3" variant={isPaid ? "success" : "danger"}>
+                  {isPaid ? <>Paid on {isPaid}</> : <>Not paid yet</>}
                 </Alert>
               </Col>
             </Row>
@@ -81,7 +105,7 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser, getOrder }) => {
               <h3>Order summary</h3>
             </ListGroup.Item>
             <ListGroup.Item>
-              Items price (after tax): <span className="fw-bold">$892</span>
+              Items price (after tax): <span className="fw-bold">${cartSubtotal}</span>
             </ListGroup.Item>
             <ListGroup.Item>
               Shipping: <span className="fw-bold">included</span>
@@ -90,12 +114,12 @@ const UserOrderDetailsPageComponent = ({ userInfo, getUser, getOrder }) => {
               Tax: <span className="fw-bold">included</span>
             </ListGroup.Item>
             <ListGroup.Item className="text-danger">
-              Total price: <span className="fw-bold">$904</span>
+              Total price: <span className="fw-bold">${cartSubtotal}</span>
             </ListGroup.Item>
             <ListGroup.Item>
               <div className="d-grid gap-2">
-                <Button size="lg" variant="danger" type="button">
-                  Pay for the order
+                <Button size="lg" variant="danger" type="button" disabled={buttonDisabled}>
+                  {orderButtonMessage}
                 </Button>
               </div>
             </ListGroup.Item>

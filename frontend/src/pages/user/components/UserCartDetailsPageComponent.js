@@ -11,12 +11,16 @@ import CartItemComponent from "../../../components/CartItemComponent";
 
 import { useEffect, useState } from "react";
 
-const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal, userInfo,addToCart, removeFromCart, reduxDispatch , getUser}) => {
+import { useNavigate } from "react-router-dom";
+
+const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal, userInfo,addToCart, removeFromCart, reduxDispatch , getUser, createOrder}) => {
 
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const [userAddress, setUserAddress] = useState(false);
     const [missingAddress, setMissingAddress] = useState("");
     const [paymentMethod, setPaymentMethod] = useState("pp");
+
+    const navigate = useNavigate();
 
     const changeCount = (productID, count) => {
         reduxDispatch(addToCart(productID, count));
@@ -61,7 +65,13 @@ const UserCartDetailsPageComponent = ({cartItems, itemsCount, cartSubtotal, user
             }),
             paymentMethod: paymentMethod,
         }
-       console.log(orderData);
+       createOrder(orderData)
+       .then(data => {
+           if (data) {
+               navigate("/user/order-details/" + data._id);
+           }
+       })
+       .catch((err) => console.log(err));
     }
 
     const choosePayment = (e) => {

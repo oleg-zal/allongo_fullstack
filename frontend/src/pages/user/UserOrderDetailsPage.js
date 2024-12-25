@@ -8,11 +8,11 @@ const getOrder = async (orderId) => {
     return data;
 }
 
-const loadPayPalScript = (cartSubtotal, cartItems) => {
+const loadPayPalScript = (cartSubtotal, cartItems, orderId, updateStateAfterOrder) => {
     loadScript({"client-id": "ARjJG2VSJ_890zcTBbbFwYg0yQs-fCq5eVT1XtM9sTzulcy8r2TK-xnPnkdQT35e5gAPejciP0UmH_Q4"})
     .then(paypal => {
         paypal
-        .Buttons(buttons(cartSubtotal, cartItems))
+        .Buttons(buttons(cartSubtotal, cartItems, orderId, updateStateAfterOrder))
         .render("#paypal-container-element");
     })
     .catch(err => {
@@ -20,7 +20,7 @@ const loadPayPalScript = (cartSubtotal, cartItems) => {
     })
 }
 
-const buttons = (cartSubtotal, cartItems) => {
+const buttons = (cartSubtotal, cartItems, orderId, updateStateAfterOrder) => {
     return {
         createOrder: function (data, actions) {
             return actions.order.create({
@@ -54,7 +54,13 @@ const buttons = (cartSubtotal, cartItems) => {
             return actions.order.capture().then(function (orderData) {
                 var transaction = orderData.purchase_units[0].payments.captures[0];
                 if (transaction.status === "COMPLETED" && Number(transaction.amount.value) === Number(cartSubtotal)) {
-                    console.log('update order in database');
+                    updateOrder(orderId)
+                    .then(data => {
+                        if (data.isPaid) {
+                            updateStateAfterOrder(data.paidAt);
+                        }
+                    })
+                    .catch((er) => console.log(er));
                 }
             })
         },
@@ -67,12 +73,14 @@ const onCancelHandler = function () {
     console.log("cancel");
 }
 
-const onApproveHandler = function () {
-    console.log("onApproveHandler");
-}
 
 const onErrorHandler = function (err) {
     console.log("error");
+}
+
+const updateOrder = async (orderId) => {
+    const { data } = await axios.put("/api/orders/paid/" + orderId);
+    return data;
 }
 
 const UserOrderDetailsPage = () => {

@@ -21,7 +21,11 @@ const onHover = {
   transform: "scale(2.7)",
 };
 
-const EditProductPageComponent = ({ categories, fetchProduct }) => {
+const EditProductPageComponent = ({
+  categories,
+  fetchProduct,
+  updateProductApiRequest,
+}) => {
   const [validated, setValidated] = useState(false);
   const [product, setProduct] = useState({});
   const { id } = useParams();
@@ -33,10 +37,20 @@ const EditProductPageComponent = ({ categories, fetchProduct }) => {
   }, [id]);
 
   const handleSubmit = (event) => {
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
+    event.preventDefault();
+    event.stopPropagation();
+    const form = event.currentTarget.elements;
+
+    const formInputs = {
+        name: form.name.value,
+        description: form.description.value,
+        count: form.count.value,
+        price: form.price.value,
+        category: form.category.value,
+    }
+
+    if (event.currentTarget.checkValidity() === true) {
+        updateProductApiRequest(id, formInputs);
     }
 
     setValidated(true);
@@ -213,7 +227,6 @@ const EditProductPageComponent = ({ categories, fetchProduct }) => {
                       <i style={onHover} className="bi bi-x text-danger"></i>
                     </Col>
                   ))}
-
               </Row>
               <Form.Control required type="file" multiple />
             </Form.Group>

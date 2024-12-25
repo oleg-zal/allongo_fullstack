@@ -12,6 +12,8 @@ import {
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
+import { useSelector } from "react-redux";
+
 const onHover = {
     cursor: "pointer",
     position: "absolute",
@@ -22,6 +24,10 @@ const onHover = {
 
 const AdminEditProductPage = () => {
   const [validated, setValidated] = useState(false);
+
+    const { categories } = useSelector((state) => state.getCategories);
+    console.log(categories);
+
   const handleSubmit = (event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
@@ -174,7 +180,7 @@ const AdminEditProductPage = () => {
               <Form.Label>Images</Form.Label>
                 <Row>
                     <Col style={{position: "relative"}} xs={3}>
-                    <Image src="/images/monitors-category.png" fluid />
+                    <Image crossOrigin="anonymous" src="/images/monitors-category.png" fluid />
                     <i style={onHover} className="bi bi-x text-danger"></i>
                     </Col>
                     <Col style={{position: "relative"}} xs={3}>

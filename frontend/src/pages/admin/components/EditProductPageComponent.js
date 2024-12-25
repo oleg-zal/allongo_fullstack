@@ -41,6 +41,8 @@ const EditProductPageComponent = ({
 
   const attrVal = useRef(null);
   const attrKey = useRef(null);
+  const createNewAttrKey = useRef(null);
+  const createNewAttrVal = useRef(null);
 
   const setValuesForAttrFromDbSelectForm = (e) => {
     if (e.target.value !== "Choose attribute") {
@@ -187,7 +189,12 @@ const EditProductPageComponent = ({
   const addNewAttributeManually = (e) => {
       if (e.keyCode && e.keyCode === 13) {
           if (newAttrKey && newAttrValue) {
-             console.log("add new attribute");
+             setAttributesTableWrapper(newAttrKey, newAttrValue);
+             e.target.value = "";
+             createNewAttrKey.current.value = "";
+             createNewAttrVal.current.value = "";
+             setNewAttrKey(false);
+             setNewAttrValue(false);
           }
       }
   }
@@ -336,11 +343,13 @@ const EditProductPageComponent = ({
                 <Form.Group className="mb-3" controlId="formBasicNewAttribute">
                   <Form.Label>Create new attribute</Form.Label>
                   <Form.Control
+                  ref={createNewAttrKey}
                     disabled={categoryChoosen === "Choose category"}
                     placeholder="first choose or create category"
                     name="newAttrKey"
                     type="text"
                     onKeyUp={newAttrKeyHandler}
+                    required={newAttrValue}
                   />
                 </Form.Group>
               </Col>
@@ -351,9 +360,10 @@ const EditProductPageComponent = ({
                 >
                   <Form.Label>Attribute value</Form.Label>
                   <Form.Control
+                  ref={createNewAttrVal}
                     disabled={categoryChoosen === "Choose category"}
                     placeholder="first choose or create category"
-                    required={true}
+                    required={newAttrKey}
                     name="newAttrValue"
                     type="text"
                     onKeyUp={newAttrValueHandler}
@@ -362,7 +372,7 @@ const EditProductPageComponent = ({
               </Col>
             </Row>
 
-            <Alert variant="primary">
+            <Alert show={newAttrKey && newAttrValue} variant="primary">
               After typing attribute key and value press enterr on one of the
               field
             </Alert>

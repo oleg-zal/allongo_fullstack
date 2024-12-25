@@ -166,6 +166,24 @@ const EditProductPageComponent = ({
       setAttributesTable((table) => table.filter((item) => item.key !== key));
   }
 
+  const checkKeyDown = (e) => {
+      if (e.code === "Enter") e.preventDefault();
+  }
+
+  const newAttrKeyHandler = (e) => {
+      e.preventDefault();
+      if (e.keyCode && e.keyCode === 13) {
+          console.log("add new attribute");
+      }
+  }
+
+  const newAttrValueHandler = (e) => {
+      e.preventDefault();
+      if (e.keyCode && e.keyCode === 13) {
+          console.log("add new attribute");
+      }
+  }
+
   return (
     <Container>
       <Row className="justify-content-md-center mt-5">
@@ -176,7 +194,7 @@ const EditProductPageComponent = ({
         </Col>
         <Col md={6}>
           <h1>Edit product</h1>
-          <Form noValidate validated={validated} onSubmit={handleSubmit}>
+          <Form noValidate validated={validated} onSubmit={handleSubmit} onKeyDown={(e) => checkKeyDown(e)}>
             <Form.Group className="mb-3" controlId="formBasicName">
               <Form.Label>Name</Form.Label>
               <Form.Control
@@ -314,6 +332,7 @@ const EditProductPageComponent = ({
                     placeholder="first choose or create category"
                     name="newAttrKey"
                     type="text"
+                    onKeyUp={newAttrKeyHandler}
                   />
                 </Form.Group>
               </Col>
@@ -329,6 +348,7 @@ const EditProductPageComponent = ({
                     required={true}
                     name="newAttrValue"
                     type="text"
+                    onKeyUp={newAttrValueHandler}
                   />
                 </Form.Group>
               </Col>

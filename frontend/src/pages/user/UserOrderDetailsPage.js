@@ -8,17 +8,11 @@ const getOrder = async (orderId) => {
     return data;
 }
 
-const loadPayPalScript = () => {
+const loadPayPalScript = (cartSubtotal, cartItems) => {
     loadScript({"client-id": "ARjJG2VSJ_890zcTBbbFwYg0yQs-fCq5eVT1XtM9sTzulcy8r2TK-xnPnkdQT35e5gAPejciP0UmH_Q4"})
     .then(paypal => {
         paypal
-        .Buttons({
-            createOrder: createPayPalOrderHandler,
-            onCancel: onCancelHandler,
-            onApprove: onApproveHandler,
-            onError: onErrorHandler,
-
-        })
+        .Buttons(buttons(cartSubtotal, cartItems))
         .render("#paypal-container-element");
     })
     .catch(err => {
@@ -26,9 +20,41 @@ const loadPayPalScript = () => {
     })
 }
 
-const createPayPalOrderHandler = function () {
-    console.log("createPayPalOrderHandler");
+const buttons = (cartSubtotal, cartItems) => {
+    return {
+        createOrder: function (data, actions) {
+            return actions.order.create({
+                purchase_units: [
+                    {
+                        amount: {
+                            value: cartSubtotal,
+                            breakdown: {
+                                item_total: {
+                                    currency_code: "USD",
+                                    value: cartSubtotal,
+                                }
+                            }
+                        },
+                        items: cartItems.map(product => {
+                            return {
+                               name: product.name,
+                                unit_amount: {
+                                   currency_code: "USD", 
+                                   value: product.price,
+                                },
+                                quantity: product.quantity,
+                            }
+                        })
+                    }
+                ]
+            })
+        },
+        onCancel: onCancelHandler,
+        onApprove: onApproveHandler,
+        onError: onErrorHandler,
+    }
 }
+
 
 const onCancelHandler = function () {
     console.log("cancel");

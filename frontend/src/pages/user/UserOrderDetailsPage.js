@@ -9,7 +9,7 @@ const getOrder = async (orderId) => {
 }
 
 const loadPayPalScript = () => {
-    loadScript({"client-id": "AbhlMqTdbfjdew9p1RaZnfTCSPA1orXZQr2xSmnVK1xUK34S9pfOqk4SbY-QUINkdnn7DpjtXRBviaZj"})
+    loadScript({"client-id": "ARjJG2VSJ_890zcTBbbFwYg0yQs-fCq5eVT1XtM9sTzulcy8r2TK-xnPnkdQT35e5gAPejciP0UmH_Q4"})
     .then(paypal => {
         paypal
         .Buttons({

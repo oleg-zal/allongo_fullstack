@@ -7,25 +7,29 @@ import {
   CloseButton,
   Table,
   Alert,
-  Image
+  Image,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-
-
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 const onHover = {
-    cursor: "pointer",
-    position: "absolute",
-    left: "5px",
-    top: "-10px",
-    transform: "scale(2.7)",
-}
+  cursor: "pointer",
+  position: "absolute",
+  left: "5px",
+  top: "-10px",
+  transform: "scale(2.7)",
+};
 
-const EditProductPageComponent = ({ categories }) => {
+const EditProductPageComponent = ({ categories, fetchProduct }) => {
   const [validated, setValidated] = useState(false);
+  const {id} = useParams()
 
-
+  useEffect(() => {
+      fetchProduct(id)
+      .then((product) => console.log(product))
+      .catch((er) => console.log(er));
+  }, [])
 
   const handleSubmit = (event) => {
     const form = event.currentTarget;
@@ -49,7 +53,12 @@ const EditProductPageComponent = ({ categories }) => {
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formBasicName">
               <Form.Label>Name</Form.Label>
-              <Form.Control name="name" required type="text" defaultValue="Panasonic" />
+              <Form.Control
+                name="name"
+                required
+                type="text"
+                defaultValue="Panasonic"
+              />
             </Form.Group>
 
             <Form.Group
@@ -67,17 +76,24 @@ const EditProductPageComponent = ({ categories }) => {
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicCount">
               <Form.Label>Count in stock</Form.Label>
-              <Form.Control name="count" required type="number" defaultValue="2" />
+              <Form.Control
+                name="count"
+                required
+                type="number"
+                defaultValue="2"
+              />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPrice">
               <Form.Label>Price</Form.Label>
-              <Form.Control name="price" required type="text" defaultValue="$210" />
+              <Form.Control
+                name="price"
+                required
+                type="text"
+                defaultValue="$210"
+              />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicCategory">
-              <Form.Label>
-                Category
-                
-              </Form.Label>
+              <Form.Label>Category</Form.Label>
               <Form.Select
                 required
                 name="category"
@@ -85,13 +101,12 @@ const EditProductPageComponent = ({ categories }) => {
               >
                 <option value="">Choose category</option>
                 {categories.map((category, idx) => (
-                   <option key={idx} value={category.name}>
-                       {category.name}
-                   </option>  
+                  <option key={idx} value={category.name}>
+                    {category.name}
+                  </option>
                 ))}
               </Form.Select>
             </Form.Group>
-
 
             <Row className="mt-5">
               <Col md={6}>
@@ -179,17 +194,20 @@ const EditProductPageComponent = ({ categories }) => {
 
             <Form.Group controlId="formFileMultiple" className="mb-3 mt-3">
               <Form.Label>Images</Form.Label>
-                <Row>
-                    <Col style={{position: "relative"}} xs={3}>
-                    <Image crossOrigin="anonymous" src="/images/monitors-category.png" fluid />
-                    <i style={onHover} className="bi bi-x text-danger"></i>
-                    </Col>
-                    <Col style={{position: "relative"}} xs={3}>
-                    <Image src="/images/monitors-category.png" fluid />
-                    <i style={onHover} className="bi bi-x text-danger"></i>
-                    </Col>
-                    
-                </Row>
+              <Row>
+                <Col style={{ position: "relative" }} xs={3}>
+                  <Image
+                    crossOrigin="anonymous"
+                    src="/images/monitors-category.png"
+                    fluid
+                  />
+                  <i style={onHover} className="bi bi-x text-danger"></i>
+                </Col>
+                <Col style={{ position: "relative" }} xs={3}>
+                  <Image src="/images/monitors-category.png" fluid />
+                  <i style={onHover} className="bi bi-x text-danger"></i>
+                </Col>
+              </Row>
               <Form.Control required type="file" multiple />
             </Form.Group>
             <Button variant="primary" type="submit">

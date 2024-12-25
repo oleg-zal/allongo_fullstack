@@ -36,6 +36,8 @@ const EditProductPageComponent = ({
   const [attributesFromDb, setAttributesFromDb] = useState([]); // for select lists
   const [attributesTable, setAttributesTable] = useState([]); // for html table
   const [categoryChoosen, setCategoryChoosen] = useState("Choose category");
+  const [newAttrKey, setNewAttrKey] = useState(false);
+  const [newAttrValue, setNewAttrValue] = useState(false);
 
   const attrVal = useRef(null);
   const attrKey = useRef(null);
@@ -172,15 +174,21 @@ const EditProductPageComponent = ({
 
   const newAttrKeyHandler = (e) => {
       e.preventDefault();
-      if (e.keyCode && e.keyCode === 13) {
-          console.log("add new attribute");
-      }
+      setNewAttrKey(e.target.value);
+      addNewAttributeManually(e);
   }
 
   const newAttrValueHandler = (e) => {
       e.preventDefault();
+      setNewAttrValue(e.target.value);
+      addNewAttributeManually(e);
+  }
+
+  const addNewAttributeManually = (e) => {
       if (e.keyCode && e.keyCode === 13) {
-          console.log("add new attribute");
+          if (newAttrKey && newAttrValue) {
+             console.log("add new attribute");
+          }
       }
   }
 

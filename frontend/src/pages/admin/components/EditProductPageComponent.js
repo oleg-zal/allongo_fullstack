@@ -33,28 +33,30 @@ const EditProductPageComponent = ({
     message: "",
     error: "",
   });
-  const [attributesFromDb, setAttributesFromDb] = useState([]);
+  const [attributesFromDb, setAttributesFromDb] = useState([]); // for select lists
+  const [attributesTable, setAttributesTable] = useState([]); // for html table
 
-    const attrVal = useRef(null);
-    const attrKey = useRef(null);
+  const attrVal = useRef(null);
+  const attrKey = useRef(null);
 
-    const setValuesForAttrFromDbSelectForm = (e) => {
-        if (e.target.value !== "Choose attribute") {
-            var selectedAttr = attributesFromDb.find((item) => item.key === e.target.value);
-            let valuesForAttrKeys = attrVal.current;
-            if (selectedAttr && selectedAttr.value.length > 0) {
-                while (valuesForAttrKeys.options.length) {
-                    valuesForAttrKeys.remove(0);
-                }
-                valuesForAttrKeys.options.add(new Option("Choose attribute value"));
-                selectedAttr.value.map(item => {
-                    valuesForAttrKeys.add(new Option(item));
-                    return "";
-                })
-            }
+  const setValuesForAttrFromDbSelectForm = (e) => {
+    if (e.target.value !== "Choose attribute") {
+      var selectedAttr = attributesFromDb.find(
+        (item) => item.key === e.target.value
+      );
+      let valuesForAttrKeys = attrVal.current;
+      if (selectedAttr && selectedAttr.value.length > 0) {
+        while (valuesForAttrKeys.options.length) {
+          valuesForAttrKeys.remove(0);
         }
+        valuesForAttrKeys.options.add(new Option("Choose attribute value"));
+        selectedAttr.value.map((item) => {
+          valuesForAttrKeys.add(new Option(item));
+          return "";
+        });
+      }
     }
-    
+  };
 
   const { id } = useParams();
 
@@ -115,17 +117,20 @@ const EditProductPageComponent = ({
         setAttributesFromDb(mainCategoryOfEditedProductAllData.attrs);
       }
     }
+    setAttributesTable(product.attrs);
   }, [product]);
 
   const changeCategory = (e) => {
-      const highLevelCategory = e.target.value.split("/")[0];
-      const highLevelCategoryAllData = categories.find((cat) => cat.name === highLevelCategory);
-      if (highLevelCategoryAllData && highLevelCategoryAllData.attrs) {
-          setAttributesFromDb(highLevelCategoryAllData.attrs);
-      } else {
-          setAttributesFromDb([]);
-      }
-  }
+    const highLevelCategory = e.target.value.split("/")[0];
+    const highLevelCategoryAllData = categories.find(
+      (cat) => cat.name === highLevelCategory
+    );
+    if (highLevelCategoryAllData && highLevelCategoryAllData.attrs) {
+      setAttributesFromDb(highLevelCategoryAllData.attrs);
+    } else {
+      setAttributesFromDb([]);
+    }
+  };
 
   return (
     <Container>
@@ -241,24 +246,28 @@ const EditProductPageComponent = ({
             )}
 
             <Row>
-              <Table hover>
-                <thead>
-                  <tr>
-                    <th>Attribute</th>
-                    <th>Value</th>
-                    <th>Delete</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>attr key</td>
-                    <td>attr value</td>
-                    <td>
-                      <CloseButton />
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
+              {attributesTable && attributesTable.length > 0 && (
+                <Table hover>
+                  <thead>
+                    <tr>
+                      <th>Attribute</th>
+                      <th>Value</th>
+                      <th>Delete</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attributesTable.map((item, idx) => (
+                      <tr key={idx}>
+                        <td>{item.key}</td>
+                        <td>{item.value}</td>
+                        <td>
+                          <CloseButton />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
             </Row>
 
             <Row>

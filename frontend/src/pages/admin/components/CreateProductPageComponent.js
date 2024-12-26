@@ -21,6 +21,7 @@ const CreateProductPageComponent = ({
   reduxDispatch,
   newCategory,
   deleteCategory,
+  saveAttributeToCatDoc
 }) => {
   const [validated, setValidated] = useState(false);
   const [attributesTable, setAttributesTable] = useState([]);
@@ -33,8 +34,13 @@ const CreateProductPageComponent = ({
   });
   const [categoryChoosen, setCategoryChoosen] = useState("Choose category");
 
+  const [newAttrKey, setNewAttrKey] = useState(false);
+  const [newAttrValue, setNewAttrValue] = useState(false);
+
   const attrVal = useRef(null);
   const attrKey = useRef(null);
+  const createNewAttrKey = useRef(null);
+  const createNewAttrVal = useRef(null);
 
   const navigate = useNavigate();
 
@@ -117,6 +123,34 @@ const CreateProductPageComponent = ({
 
   const deleteAttribute = (key) => {
       setAttributesTable((table) => table.filter((item) => item.key !== key));
+  }
+
+  const newAttrKeyHandler = (e) => {
+      e.preventDefault();
+      setNewAttrKey(e.target.value);
+      addNewAttributeManually(e);
+  }
+
+  const newAttrValueHandler = (e) => {
+      e.preventDefault();
+      setNewAttrValue(e.target.value);
+      addNewAttributeManually(e);
+
+  }
+
+  const addNewAttributeManually = (e) => {
+      if (e.keyCode && e.keyCode === 13) {
+           if (newAttrKey && newAttrValue) {
+              reduxDispatch(saveAttributeToCatDoc(newAttrKey, newAttrValue, categoryChoosen));
+               setAttributesTableWrapper(newAttrKey, newAttrValue, setAttributesTable);
+               e.target.value = "";
+               createNewAttrKey.current.value = "";
+               createNewAttrVal.current.value = "";
+               setNewAttrKey(false);
+               setNewAttrValue(false);
+           }
+
+      }
   }
 
   return (
@@ -264,10 +298,12 @@ const CreateProductPageComponent = ({
                 <Form.Group className="mb-3" controlId="formBasicNewAttribute">
                   <Form.Label>Create new attribute</Form.Label>
                   <Form.Control
+                  ref={createNewAttrKey}
                     disabled={["", "Choose category"].includes(categoryChoosen)}
                     placeholder="first choose or create category"
                     name="newAttrValue"
                     type="text"
+                    onKeyUp={newAttrKeyHandler}
                   />
                 </Form.Group>
               </Col>
@@ -278,17 +314,19 @@ const CreateProductPageComponent = ({
                 >
                   <Form.Label>Attribute value</Form.Label>
                   <Form.Control
+                  ref={createNewAttrVal}
                     disabled={["", "Choose category"].includes(categoryChoosen)}
                     placeholder="first choose or create category"
-                    required={true}
+                    required={newAttrKey}
                     name="newAttrValue"
                     type="text"
+                    onKeyUp={newAttrValueHandler}
                   />
                 </Form.Group>
               </Col>
             </Row>
 
-            <Alert variant="primary">
+            <Alert show={newAttrKey && newAttrValue} variant="primary">
               After typing attribute key and value press enterr on one of the
               field
             </Alert>

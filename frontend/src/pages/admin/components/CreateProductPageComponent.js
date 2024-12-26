@@ -11,8 +11,9 @@ import {
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
-const CreateProductPageComponent = () => {
+const CreateProductPageComponent = ({ createProductApiRequest, uploadImagesApiRequest }) => {
   const [validated, setValidated] = useState(false);
+  const [attributesTable, setAttributesTable] = useState([]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -24,10 +25,16 @@ const CreateProductPageComponent = () => {
         count: form.count.value,
         price: form.price.value,
         category: form.category.value,
-        attributesTable: []
+        attributesTable: attributesTable
     }
     if (event.currentTarget.checkValidity() === true) {
-        console.log(formInputs)
+        createProductApiRequest(formInputs)
+        .then(data => {
+            console.log(data)
+        })
+        .catch(er => {
+            console.log(er.response.data.message ? er.response.data.message : er.response.data);
+        })
     }
 
     setValidated(true);

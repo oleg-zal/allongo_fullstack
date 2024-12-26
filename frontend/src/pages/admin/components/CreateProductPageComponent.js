@@ -11,7 +11,7 @@ import {
 import { Link } from "react-router-dom";
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { changeCategory, setValuesForAttrFromDbSelectForm } from "./utils/utils";
+import { changeCategory, setValuesForAttrFromDbSelectForm, setAttributesTableWrapper } from "./utils/utils";
 
 const CreateProductPageComponent = ({
   createProductApiRequest,
@@ -108,6 +108,12 @@ const CreateProductPageComponent = ({
     reduxDispatch(deleteCategory(element.value));
     setCategoryChoosen("Choose category");
   };
+
+  const attributeValueSelected = (e) => {
+      if (e.target.value !== "Choose attribute value") {
+          setAttributesTableWrapper(attrKey.current.value, e.target.value, setAttributesTable);
+      }
+  }
 
   return (
     <Container>
@@ -212,6 +218,7 @@ const CreateProductPageComponent = ({
                   >
                     <Form.Label>Attribute value</Form.Label>
                     <Form.Select
+                    onChange={attributeValueSelected}
                       name="atrrVal"
                       aria-label="Default select example"
                       ref={attrVal}

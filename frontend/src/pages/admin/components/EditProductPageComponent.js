@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect, Fragment, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { changeCategory, setValuesForAttrFromDbSelectForm } from "./utils/utils";
+import { changeCategory, setValuesForAttrFromDbSelectForm, setAttributesTableWrapper } from "./utils/utils";
 
 const onHover = {
   cursor: "pointer",
@@ -123,30 +123,11 @@ const EditProductPageComponent = ({
 
   const attributeValueSelected = (e) => {
       if (e.target.value !== "Choose attribute value") {
-          setAttributesTableWrapper(attrKey.current.value, e.target.value);
+          setAttributesTableWrapper(attrKey.current.value, e.target.value, setAttributesTable);
       }
   }
 
-  const setAttributesTableWrapper = (key, val) => {
-      setAttributesTable((attr) => {
-          if (attr.length !== 0) {
-              var keyExistsInOldTable = false;
-              let modifiedTable = attr.map(item => {
-                  if (item.key === key) {
-                      keyExistsInOldTable = true;
-                      item.value = val;
-                      return item;
-                  } else {
-                      return item;
-                  }
-              })
-              if (keyExistsInOldTable) return [...modifiedTable];
-              else return [...modifiedTable, { key: key, value: val }];
-          } else {
-             return [{ key: key, value: val }]; 
-          }
-      })
-  }
+  
 
   const deleteAttribute = (key) => {
       setAttributesTable((table) => table.filter((item) => item.key !== key));
@@ -172,7 +153,7 @@ const EditProductPageComponent = ({
       if (e.keyCode && e.keyCode === 13) {
           if (newAttrKey && newAttrValue) {
               reduxDispatch(saveAttributeToCatDoc(newAttrKey, newAttrValue, categoryChoosen));
-             setAttributesTableWrapper(newAttrKey, newAttrValue);
+             setAttributesTableWrapper(newAttrKey, newAttrValue, setAttributesTable);
              e.target.value = "";
              createNewAttrKey.current.value = "";
              createNewAttrVal.current.value = "";

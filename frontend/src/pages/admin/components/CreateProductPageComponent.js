@@ -12,7 +12,16 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const CreateProductPageComponent = ({ createProductApiRequest, uploadImagesApiRequest, uploadImagesCloudinaryApiRequest }) => {
+const CreateProductPageComponent = (
+    {
+      createProductApiRequest,
+      uploadImagesApiRequest,
+      uploadImagesCloudinaryApiRequest,
+      categories,
+      reduxDispatch,
+      newCategory
+    }
+  ) => {
   const [validated, setValidated] = useState(false);
   const [attributesTable, setAttributesTable] = useState([]);
   const [images, setImages] = useState(false);
@@ -52,9 +61,9 @@ const CreateProductPageComponent = ({ createProductApiRequest, uploadImagesApiRe
             if (data.message === "product created") navigate("/admin/products");
         })
         .catch(er => {
-            setCreateProductResponseState(
-                { error: er.response.data.message ? er.response.data.message : er.response.data }
-            );
+            setCreateProductResponseState({
+              error: er.response.data.message ? er.response.data.message : er.response.data
+            });
         })
     }
 
@@ -63,6 +72,12 @@ const CreateProductPageComponent = ({ createProductApiRequest, uploadImagesApiRe
 
     const uploadHandler = (images) => {
         setImages(images);
+    }
+
+    const newCategoryHandler = (e) => {
+        if (e.keyCode && e.keyCode === 13 && e.target.value) {
+            reduxDispatch(newCategory(e.target.value));
+        }
     }
 
   return (
@@ -112,9 +127,11 @@ const CreateProductPageComponent = ({ createProductApiRequest, uploadImagesApiRe
                 aria-label="Default select example"
               >
                 <option value="">Choose category</option>
-                <option value="1">Laptops</option>
-                <option value="2">TV</option>
-                <option value="3">Games</option>
+                {categories.map((category, idx) => (
+                    <option key={idx} value={category.name}>
+                      {category.name} 
+                   </option> 
+                ))}
               </Form.Select>
             </Form.Group>
 
@@ -122,7 +139,7 @@ const CreateProductPageComponent = ({ createProductApiRequest, uploadImagesApiRe
               <Form.Label>
                 Or create a new category (e.g. Computers/Laptops/Intel){" "}
               </Form.Label>
-              <Form.Control name="newCategory" type="text" />
+              <Form.Control onKeyUp={newCategoryHandler} name="newCategory" type="text" />
             </Form.Group>
 
             <Row className="mt-5">
@@ -212,14 +229,9 @@ const CreateProductPageComponent = ({ createProductApiRequest, uploadImagesApiRe
             <Form.Group controlId="formFileMultiple" className="mb-3 mt-3">
               <Form.Label>Images</Form.Label>
 
-              <Form.Control
-                  required
-                  type="file"
-                  multiple
-                  onChange={(e) => uploadHandler(e.target.files)}
-              />
-                {isCreating}
-              </Form.Group>
+              <Form.Control required type="file" multiple onChange={(e) => uploadHandler(e.target.files)} />
+              {isCreating}
+            </Form.Group>
             <Button variant="primary" type="submit">
               Create
             </Button>

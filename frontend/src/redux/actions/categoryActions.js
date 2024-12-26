@@ -19,3 +19,7 @@ export const saveAttributeToCatDoc = (key, val, categoryChoosen) => async (dispa
        })
    }
 }
+
+export const newCategory = (category) => async (dispatch, getState) => {
+    console.log(category);
+}

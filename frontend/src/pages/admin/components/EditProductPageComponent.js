@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect, Fragment, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { changeCategory } from "./utils/utils";
+import { changeCategory, setValuesForAttrFromDbSelectForm } from "./utils/utils";
 
 const onHover = {
   cursor: "pointer",
@@ -54,24 +54,7 @@ const EditProductPageComponent = ({
   const createNewAttrKey = useRef(null);
   const createNewAttrVal = useRef(null);
 
-  const setValuesForAttrFromDbSelectForm = (e) => {
-    if (e.target.value !== "Choose attribute") {
-      var selectedAttr = attributesFromDb.find(
-        (item) => item.key === e.target.value
-      );
-      let valuesForAttrKeys = attrVal.current;
-      if (selectedAttr && selectedAttr.value.length > 0) {
-        while (valuesForAttrKeys.options.length) {
-          valuesForAttrKeys.remove(0);
-        }
-        valuesForAttrKeys.options.add(new Option("Choose attribute value"));
-        selectedAttr.value.map((item) => {
-          valuesForAttrKeys.add(new Option(item));
-          return "";
-        });
-      }
-    }
-  };
+  
 
   const { id } = useParams();
 
@@ -283,7 +266,7 @@ const EditProductPageComponent = ({
                       name="atrrKey"
                       aria-label="Default select example"
                       ref={attrKey}
-                      onChange={setValuesForAttrFromDbSelectForm}
+                      onChange={(e)=>setValuesForAttrFromDbSelectForm(e, attrVal, attributesFromDb)}
                     >
                       <option>Choose attribute</option>
                       {attributesFromDb.map((item, idx) => (

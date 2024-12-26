@@ -9,9 +9,9 @@ import {
   Alert,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { changeCategory } from "./utils/utils";
+import { changeCategory, setValuesForAttrFromDbSelectForm } from "./utils/utils";
 
 const CreateProductPageComponent = ({
   createProductApiRequest,
@@ -32,6 +32,9 @@ const CreateProductPageComponent = ({
     error: "",
   });
   const [categoryChoosen, setCategoryChoosen] = useState("Choose category");
+
+  const attrVal = useRef(null);
+  const attrKey = useRef(null);
 
   const navigate = useNavigate();
 
@@ -93,8 +96,8 @@ const CreateProductPageComponent = ({
       reduxDispatch(newCategory(e.target.value));
       setTimeout(() => {
         let element = document.getElementById("cats");
-        element.value = e.target.value;
         setCategoryChoosen(e.target.value);
+        element.value = e.target.value;
         e.target.value = "";
       }, 200);
     }
@@ -190,6 +193,8 @@ const CreateProductPageComponent = ({
                     <Form.Select
                       name="atrrKey"
                       aria-label="Default select example"
+                      ref={attrKey}
+                      onChange={(e)=>setValuesForAttrFromDbSelectForm(e, attrVal, attributesFromDb)}
                     >
                       <option>Choose attribute</option>
                       {attributesFromDb.map((item, idx) => (
@@ -209,6 +214,7 @@ const CreateProductPageComponent = ({
                     <Form.Select
                       name="atrrVal"
                       aria-label="Default select example"
+                      ref={attrVal}
                     >
                       <option>Choose attribute value</option>
                     </Form.Select>

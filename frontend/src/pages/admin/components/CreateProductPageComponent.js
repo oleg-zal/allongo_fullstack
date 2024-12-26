@@ -153,6 +153,10 @@ const CreateProductPageComponent = ({
       }
   }
 
+  const checkKeyDown = (e) => {
+      if (e.code === "Enter") e.preventDefault();
+  }
+
   return (
     <Container>
       <Row className="justify-content-md-center mt-5">
@@ -163,7 +167,7 @@ const CreateProductPageComponent = ({
         </Col>
         <Col md={6}>
           <h1>Create a new product</h1>
-          <Form noValidate validated={validated} onSubmit={handleSubmit}>
+          <Form noValidate validated={validated} onSubmit={handleSubmit} onKeyDown={(e) => checkKeyDown(e)} >
             <Form.Group className="mb-3" controlId="formBasicName">
               <Form.Label>Name</Form.Label>
               <Form.Control name="name" required type="text" />

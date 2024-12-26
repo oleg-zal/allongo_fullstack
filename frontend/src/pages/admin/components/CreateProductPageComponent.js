@@ -12,21 +12,23 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const CreateProductPageComponent = (
-    {
-      createProductApiRequest,
-      uploadImagesApiRequest,
-      uploadImagesCloudinaryApiRequest,
-      categories,
-      reduxDispatch,
-      newCategory
-    }
-  ) => {
+const CreateProductPageComponent = ({
+  createProductApiRequest,
+  uploadImagesApiRequest,
+  uploadImagesCloudinaryApiRequest,
+  categories,
+  reduxDispatch,
+  newCategory,
+}) => {
   const [validated, setValidated] = useState(false);
   const [attributesTable, setAttributesTable] = useState([]);
   const [images, setImages] = useState(false);
   const [isCreating, setIsCreating] = useState("");
-  const [createProductResponseState, setCreateProductResponseState] = useState({ message: "", error: "" });
+  const [createProductResponseState, setCreateProductResponseState] = useState({
+    message: "",
+    error: "",
+  });
+  const [categoryChoosen, setCategoryChoosen] = useState("Choose category");
 
   const navigate = useNavigate();
 
@@ -35,50 +37,65 @@ const CreateProductPageComponent = (
     event.stopPropagation();
     const form = event.currentTarget.elements;
     const formInputs = {
-        name: form.name.value,
-        description: form.description.value,
-        count: form.count.value,
-        price: form.price.value,
-        category: form.category.value,
-        attributesTable: attributesTable
-    }
+      name: form.name.value,
+      description: form.description.value,
+      count: form.count.value,
+      price: form.price.value,
+      category: form.category.value,
+      attributesTable: attributesTable,
+    };
     if (event.currentTarget.checkValidity() === true) {
-        if (images.length > 3) {
-            setIsCreating("to many files");
-            return
-        }
-        createProductApiRequest(formInputs)
-        .then(data => {
-            if (images) {
-                if (process.env.NODE_ENV !== "production") { // to do: change to !==
-                uploadImagesApiRequest(images, data.productId)
-                .then(res => {})
-                .catch((er) => setIsCreating(er.response.data.message ? er.response.data.message : er.response.data))
-                } else {
-                    uploadImagesCloudinaryApiRequest(images, data.productId);
-                }
+      if (images.length > 3) {
+        setIsCreating("to many files");
+        return;
+      }
+      createProductApiRequest(formInputs)
+        .then((data) => {
+          if (images) {
+            if (process.env.NODE_ENV !== "production") {
+              // to do: change to !==
+              uploadImagesApiRequest(images, data.productId)
+                .then((res) => {})
+                .catch((er) =>
+                  setIsCreating(
+                    er.response.data.message
+                      ? er.response.data.message
+                      : er.response.data
+                  )
+                );
+            } else {
+              uploadImagesCloudinaryApiRequest(images, data.productId);
             }
-            if (data.message === "product created") navigate("/admin/products");
+          }
+          if (data.message === "product created") navigate("/admin/products");
         })
-        .catch(er => {
-            setCreateProductResponseState({
-              error: er.response.data.message ? er.response.data.message : er.response.data
-            });
-        })
+        .catch((er) => {
+          setCreateProductResponseState({
+            error: er.response.data.message
+              ? er.response.data.message
+              : er.response.data,
+          });
+        });
     }
 
     setValidated(true);
   };
 
-    const uploadHandler = (images) => {
-        setImages(images);
-    }
+  const uploadHandler = (images) => {
+    setImages(images);
+  };
 
-    const newCategoryHandler = (e) => {
-        if (e.keyCode && e.keyCode === 13 && e.target.value) {
-            reduxDispatch(newCategory(e.target.value));
-        }
+  const newCategoryHandler = (e) => {
+    if (e.keyCode && e.keyCode === 13 && e.target.value) {
+      reduxDispatch(newCategory(e.target.value));
+      setTimeout(() => {
+        let element = document.getElementById("cats");
+        element.value = e.target.value;
+        setCategoryChoosen(e.target.value);
+        e.target.value = "";
+      }, 200);
     }
+  };
 
   return (
     <Container>
@@ -122,15 +139,16 @@ const CreateProductPageComponent = (
                 <CloseButton />(<small>remove selected</small>)
               </Form.Label>
               <Form.Select
+                id="cats"
                 required
                 name="category"
                 aria-label="Default select example"
               >
-                <option value="">Choose category</option>
+                <option value="Choose category">Choose category</option>
                 {categories.map((category, idx) => (
-                    <option key={idx} value={category.name}>
-                      {category.name} 
-                   </option> 
+                  <option key={idx} value={category.name}>
+                    {category.name}
+                  </option>
                 ))}
               </Form.Select>
             </Form.Group>
@@ -139,7 +157,11 @@ const CreateProductPageComponent = (
               <Form.Label>
                 Or create a new category (e.g. Computers/Laptops/Intel){" "}
               </Form.Label>
-              <Form.Control onKeyUp={newCategoryHandler} name="newCategory" type="text" />
+              <Form.Control
+                onKeyUp={newCategoryHandler}
+                name="newCategory"
+                type="text"
+              />
             </Form.Group>
 
             <Row className="mt-5">
@@ -197,7 +219,7 @@ const CreateProductPageComponent = (
                 <Form.Group className="mb-3" controlId="formBasicNewAttribute">
                   <Form.Label>Create new attribute</Form.Label>
                   <Form.Control
-                    disabled={false}
+                    disabled={categoryChoosen === "Choose category"}
                     placeholder="first choose or create category"
                     name="newAttrValue"
                     type="text"
@@ -211,7 +233,7 @@ const CreateProductPageComponent = (
                 >
                   <Form.Label>Attribute value</Form.Label>
                   <Form.Control
-                    disabled={false}
+                    disabled={categoryChoosen === "Choose category"}
                     placeholder="first choose or create category"
                     required={true}
                     name="newAttrValue"
@@ -229,7 +251,12 @@ const CreateProductPageComponent = (
             <Form.Group controlId="formFileMultiple" className="mb-3 mt-3">
               <Form.Label>Images</Form.Label>
 
-              <Form.Control required type="file" multiple onChange={(e) => uploadHandler(e.target.files)} />
+              <Form.Control
+                required
+                type="file"
+                multiple
+                onChange={(e) => uploadHandler(e.target.files)}
+              />
               {isCreating}
             </Form.Group>
             <Button variant="primary" type="submit">

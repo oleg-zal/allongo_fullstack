@@ -42,15 +42,22 @@ const CreateProductPageComponent = ({ createProductApiRequest, uploadImagesApiRe
                 .then(res => {})
                 .catch((er) => setIsCreating(er.response.data.message ? er.response.data.message : er.response.data))
                 } else {
-                    uploadImagesCloudinaryApiRequest(images);
+                    uploadImagesCloudinaryApiRequest(images, data.productId);
                 }
             }
-            if (data.message === "product created") navigate("/admin/products");
+            return data;
+        })
+        .then(data => {
+            setIsCreating("Product is being created....");
+            setTimeout(() => {
+                 setIsCreating("");
+                 if (data.message === "product created") navigate("/admin/products");
+            }, 2000)
+
         })
         .catch(er => {
             setCreateProductResponseState(
-                { error: er.response.data.message ? er.response.data.message : er.response.data }
-            );
+                { error: er.response.data.message ? er.response.data.message : er.response.data });
         })
     }
 
@@ -208,9 +215,14 @@ const CreateProductPageComponent = ({ createProductApiRequest, uploadImagesApiRe
             <Form.Group controlId="formFileMultiple" className="mb-3 mt-3">
               <Form.Label>Images</Form.Label>
 
-              <Form.Control required type="file" multiple onChange={(e) => uploadHandler(e.target.files)} />
-              {isCreating}
-            </Form.Group>
+              <Form.Control
+                  required
+                  type="file"
+                  multiple
+                  onChange={(e) => uploadHandler(e.target.files)}
+              />
+                {isCreating}
+              </Form.Group>
             <Button variant="primary" type="submit">
               Create
             </Button>

@@ -27,7 +27,8 @@ const EditProductPageComponent = ({
   fetchProduct,
   updateProductApiRequest,
   reduxDispatch,
-  saveAttributeToCatDoc
+  saveAttributeToCatDoc,
+  imageDeleteHandler
 }) => {
   const [validated, setValidated] = useState(false);
   const [product, setProduct] = useState({});
@@ -40,6 +41,7 @@ const EditProductPageComponent = ({
   const [categoryChoosen, setCategoryChoosen] = useState("Choose category");
   const [newAttrKey, setNewAttrKey] = useState(false);
   const [newAttrValue, setNewAttrValue] = useState(false);
+  const [imageRemoved, setImageRemoved] = useState(false)
 
   const attrVal = useRef(null);
   const attrKey = useRef(null);
@@ -73,7 +75,7 @@ const EditProductPageComponent = ({
     fetchProduct(id)
       .then((product) => setProduct(product))
       .catch((er) => console.log(er));
-  }, [id]);
+  }, [id, imageRemoved]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -391,7 +393,7 @@ const EditProductPageComponent = ({
                         src={image.path ?? null}
                         fluid
                       />
-                      <i style={onHover} className="bi bi-x text-danger"></i>
+                      <i style={onHover} onClick={() => imageDeleteHandler(image.path, id).then(data => setImageRemoved(!imageRemoved))} className="bi bi-x text-danger"></i>
                     </Col>
                   ))}
               </Row>

@@ -20,7 +20,8 @@ const ProductDetailsPageComponent = ({
   addToCartReduxAction,
   reduxDispatch,
   getProductDetails,
-  userInfo
+  userInfo,
+  writeReviewApiRequest
 }) => {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
@@ -64,7 +65,7 @@ const ProductDetailsPageComponent = ({
           er.response.data.message ? er.response.data.message : er.response.data
         )
       );
-  }, []);
+  }, [id, productReviewed]);
 
   const sendReviewHandler = (e) => {
      e.preventDefault();
@@ -74,7 +75,13 @@ const ProductDetailsPageComponent = ({
          rating: form.rating.value,
      }
      if (e.currentTarget.checkValidity() === true) {
-         console.log(product._id, formInputs);
+         writeReviewApiRequest(product._id, formInputs)
+         .then(data => {
+             if (data === "review created") {
+                 setProductReviewed("You successfuly reviewed the page!");
+             }
+         })
+         .catch((er) => setProductReviewed(er.response.data.message ? er.response.data.message : er.response.data));
      }
   }
 
@@ -187,11 +194,7 @@ const ProductDetailsPageComponent = ({
                   <Form.Label>Write a review</Form.Label>
                   <Form.Control name="comment" required as="textarea" disabled={!userInfo.name} rows={3} />
                 </Form.Group>
-                <Form.Select
-                    name="rating"
-                    required disabled={!userInfo.name}
-                    aria-label="Default select example"
-                >
+                <Form.Select name="rating" required disabled={!userInfo.name} aria-label="Default select example">
                   <option value="">Your rating</option>
                   <option value="5">5 (very good)</option>
                   <option value="4">4 (good)</option>

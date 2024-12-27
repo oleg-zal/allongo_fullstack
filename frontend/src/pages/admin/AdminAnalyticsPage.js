@@ -1,5 +1,6 @@
 import AnalyticsPageComponent from "./components/AnalyticsPageComponent";
 import axios from "axios";
+import socketIOClient from "socket.io-client";
 
 const fetchOrdersForFirstDate = async (abctrl, firstDateToCompare) => {
     const { data } = await axios.get("/api/orders/analysis/" + firstDateToCompare, {
@@ -16,7 +17,11 @@ const fetchOrdersForSecondDate = async (abctrl, secondDateToCompare) => {
 };
 
 const AdminAnalyticsPage = () => {
-  return <AnalyticsPageComponent fetchOrdersForFirstDate={fetchOrdersForFirstDate} fetchOrdersForSecondDate={fetchOrdersForSecondDate} />;
+  return <AnalyticsPageComponent
+      fetchOrdersForFirstDate={fetchOrdersForFirstDate}
+      fetchOrdersForSecondDate={fetchOrdersForSecondDate}
+      socketIOClient={socketIOClient}
+  />;
 };
 
 export default AdminAnalyticsPage;

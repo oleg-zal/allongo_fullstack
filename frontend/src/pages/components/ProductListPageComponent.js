@@ -8,7 +8,7 @@ import CategoryFilterComponent from "../../components/filterQueryResultOptions/C
 import AttributesFilterComponent from "../../components/filterQueryResultOptions/AttributesFilterComponent";
 
 import { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 
 const ProductListPageComponent = ({ getProducts, categories }) => {
   const [products, setProducts] = useState([]);
@@ -30,6 +30,7 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
   const { pageNumParam } = useParams() || 1;
   const { searchQuery } = useParams() || "";
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (categoryName) {
@@ -80,6 +81,7 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
   }, [categoryName, pageNumParam, searchQuery, filters, sortOption]);
 
   const handleFilters = () => {
+     navigate(location.pathname.replace(/\/[0-9]+$/, "")); 
     setShowResetFiltersButton(true);
     setFilters({
       price: price,

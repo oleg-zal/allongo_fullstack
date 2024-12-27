@@ -88,7 +88,7 @@ const ProductDetailsPageComponent = ({
                           src={`${image.path ?? null}`}
                         />
                       </div>
-                        <br />
+                      <br />
                     </div>
                   ))
                 : null}
@@ -130,10 +130,11 @@ const ProductDetailsPageComponent = ({
                         size="lg"
                         aria-label="Default select example"
                       >
-                        <option>choose</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
+                        {[...Array(product.count).keys()].map((x) => (
+                          <option key={x + 1} value={x + 1}>
+                            {x + 1}
+                          </option>
+                        ))}
                       </Form.Select>
                     </ListGroup.Item>
                     <ListGroup.Item>
@@ -148,16 +149,16 @@ const ProductDetailsPageComponent = ({
                 <Col className="mt-5">
                   <h5>REVIEWS</h5>
                   <ListGroup variant="flush">
-                    {Array.from({ length: 10 }).map((item, idx) => (
-                      <ListGroup.Item key={idx}>
-                        John Doe <br />
-                        <Rating readonly size={20} initialValue={4} />
-                        <br />
-                        20-09-2001 <br />
-                        Porta ac consectetur ac Lorem ipsum dolor, sit amet
-                        consectetur adipisicing elit. Perferendis, illo.
-                      </ListGroup.Item>
-                    ))}
+                    {product.reviews &&
+                      product.reviews.map((review, idx) => (
+                        <ListGroup.Item key={idx}>
+                          {review.user.name} <br />
+                          <Rating readonly size={20} initialValue={review.rating} />
+                          <br />
+                          {review.createdAt.substring(0, 10)} <br />
+                          {review.comment}
+                        </ListGroup.Item>
+                      ))}
                   </ListGroup>
                 </Col>
               </Row>

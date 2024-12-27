@@ -31,7 +31,19 @@ const AnalyticsPageComponent = ({
 
   useEffect(() => {
       const socket = socketIOClient();
-      socket.on("newOrder", (data) => console.log(data));
+      let today = new Date().toDateString();
+      const handler = (newOrder) => {
+          if (new Date(newOrder.createdAt).toDateString() === today) {
+              if (today === new Date(firstDateToCompare).toDateString()) {
+                  
+              }
+              else if (today === new Date(secondDateToCompare).toDateString()) {
+
+              }
+          }
+      }
+      socket.on("newOrder", handler);
+      return () => socket.off("newOrder", handler);
   }, [setDataForFirstSet, setDataForSecondSet, firstDateToCompare, secondDateToCompare])
 
   useEffect(() => {

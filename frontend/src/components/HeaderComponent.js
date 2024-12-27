@@ -25,10 +25,17 @@ const HeaderComponent = () => {
   const { categories } = useSelector((state) => state.getCategories);
 
   const [searchCategoryToggle, setSearchCategoryToggle] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     dispatch(getCategories());
   }, [dispatch]);
+
+  const submitHandler = (e) => {
+     if (e.keyCode && e.keyCode !== 13) return;
+     e.preventDefault();
+     console.log(searchQuery);
+  }
 
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -46,8 +53,8 @@ const HeaderComponent = () => {
                   <Dropdown.Item key={id} onClick={() => setSearchCategoryToggle(category.name)}>{category.name}</Dropdown.Item>
                 ))}
               </DropdownButton>
-              <Form.Control type="text" placeholder="Search in shop ..." />
-              <Button variant="warning">
+              <Form.Control onKeyUp={submitHandler} onChange={(e) => setSearchQuery(e.target.value)} type="text" placeholder="Search in shop ..." />
+              <Button onClick={submitHandler} variant="warning">
                 <i className="bi bi-search text-dark"></i>
               </Button>
             </InputGroup>

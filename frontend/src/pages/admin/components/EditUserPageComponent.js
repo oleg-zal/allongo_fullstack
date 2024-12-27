@@ -1,9 +1,16 @@
 import { Row, Col, Container, Form, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
-const EditUserPageComponent = ({ updateUserApiRequest }) => {
+const EditUserPageComponent = ({ updateUserApiRequest, fetchUser }) => {
   const [validated, setValidated] = useState(false);
+    const [user, setUser] = useState([]);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    const { id } = useParams();
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -18,6 +25,16 @@ const EditUserPageComponent = ({ updateUserApiRequest }) => {
 
     setValidated(true);
   };
+
+    useEffect(() => {
+        fetchUser(id)
+        .then(data => {
+            setUser(data);
+            setIsAdmin(data.isAdmin);
+        })
+        .catch((er) => console.log(er.response.data.message ? er.response.data.message : er.response.data));
+    }, [id])
+
   return (
     <Container>
       <Row className="justify-content-md-center mt-5">
@@ -35,7 +52,7 @@ const EditUserPageComponent = ({ updateUserApiRequest }) => {
                 name="name"
                 required
                 type="text"
-                defaultValue="John"
+                defaultValue={user.name}
               />
             </Form.Group>
 
@@ -45,7 +62,7 @@ const EditUserPageComponent = ({ updateUserApiRequest }) => {
                 name="lastName"
                 required
                 type="text"
-                defaultValue="Doe"
+                defaultValue={user.lastName} 
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -54,12 +71,12 @@ const EditUserPageComponent = ({ updateUserApiRequest }) => {
                 name="email"
                 required
                 type="email"
-                defaultValue="John@email.com"
+                defaultValue={user.email}
               />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
-              <Form.Check name="isAdmin" type="checkbox" label="Is admin" />
+              <Form.Check name="isAdmin" type="checkbox" label="Is admin" checked={isAdmin} />
             </Form.Group>
 
             <Button variant="primary" type="submit">

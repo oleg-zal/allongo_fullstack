@@ -23,9 +23,11 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
   const [ratingsFromFilter, setRatingsFromFilter] = useState({});
   const [categoriesFromFilter, setCategoriesFromFilter] = useState({});
   const [sortOption, setSortOption] = useState("");
+  const [paginationLinksNumber, setPaginationLinksNumber] = useState(null);
+  const [pageNum, setPageNum] = useState(null);
 
   const { categoryName } = useParams() || "";
-  const { pageNumParam } = useParams() || "";
+  const { pageNumParam } = useParams() || 1;
   const { searchQuery } = useParams() || "";
   const location = useLocation();
 
@@ -67,14 +69,15 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
     getProducts(categoryName, pageNumParam, searchQuery, filters, sortOption)
       .then((products) => {
         setProducts(products.products);
+        setPaginationLinksNumber(products.paginationLinksNumber);
+        setPageNum(products.pageNum);
         setLoading(false);
       })
       .catch((er) => {
         console.log(er);
         setError(true);
       });
-
-  }, [categoryName, pageNumParam, searchQuery,filters, sortOption]);
+  }, [categoryName, pageNumParam, searchQuery, filters, sortOption]);
 
   const handleFilters = () => {
     setShowResetFiltersButton(true);
@@ -153,7 +156,14 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
               />
             ))
           )}
-          <PaginationComponent />
+          {paginationLinksNumber > 1 ? (
+            <PaginationComponent
+              categoryName={categoryName}
+              searchQuery={searchQuery}
+              paginationLinksNumber={paginationLinksNumber}
+              pageNum={pageNum}
+            />
+          ) : null}
         </Col>
       </Row>
     </Container>

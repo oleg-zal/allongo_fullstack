@@ -1,5 +1,5 @@
 import { Toast, Button, Form } from "react-bootstrap";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 
 const AdminChatRoomComponent = ({ chatRoom, roomIndex, socketUser }) => {
   [window["toast" + roomIndex], window["closeToast" + roomIndex]] =
@@ -22,7 +22,18 @@ const AdminChatRoomComponent = ({ chatRoom, roomIndex, socketUser }) => {
       }
       chatRoom[1].push({ admin: msg.value });
        setRerender(!rerender);
+        msg.focus();
+        setTimeout(() => {
+            msg.value = "";
+            const chatMessages = document.querySelector(`.cht-msg${socketUser}`);
+            if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 200)
   }
+
+  useEffect(() => {
+     const chatMessages = document.querySelector(`.cht-msg${socketUser}`); 
+     if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+  })
 
   return (
     <>

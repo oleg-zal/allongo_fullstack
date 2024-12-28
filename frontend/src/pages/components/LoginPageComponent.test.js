@@ -2,6 +2,7 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import LoginPageComponent from "./LoginPageComponent";
 import { MemoryRouter as Router } from "react-router-dom";
+import renderer from "react-test-renderer";
 
 let loginUserApiRequest = () => {
   return new Promise((resolve, reject) => {
@@ -44,11 +45,7 @@ afterAll(() => {
 test("if admin is logged in", async () => {
   render(
     <Router>
-      <LoginPageComponent
-          loginUserApiRequest={loginUserApiRequest}
-          reduxDispatch={() => {}}
-          setReduxUserState={() => {}}
-      />
+      <LoginPageComponent loginUserApiRequest={loginUserApiRequest} reduxDispatch={() => {}} setReduxUserState={() => {}} />
     </Router>
   );
   await waitFor(() => screen.getByLabelText("Email address"));
@@ -100,3 +97,11 @@ test("if wrong credentials", async () => {
   expect(screen.getByText(/Wrong credentials/i)).toBeInTheDocument();
 });
 
+test("create login snapshot", () => {
+    const tree = renderer.create(
+        <Router>
+            <LoginPageComponent loginUserApiRequest={loginUserApiRequest} reduxDispatch={() => {}} setReduxUserState={() => {}} />
+        </Router>
+    ).toJSON();
+    expect(tree).toMatchSnapshot();
+})

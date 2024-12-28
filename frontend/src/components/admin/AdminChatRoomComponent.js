@@ -4,10 +4,25 @@ import { Fragment, useState } from "react";
 const AdminChatRoomComponent = ({ chatRoom, roomIndex, socketUser }) => {
   [window["toast" + roomIndex], window["closeToast" + roomIndex]] =
     useState(true);
+    const [rerender, setRerender] = useState(false);
 
   const close = () => {
     window["closeToast" + roomIndex](false);
   };
+
+  const adminSubmitChatMsg = (e, elem) => {
+      e.preventDefault();
+      if (e.keyCode && e.keyCode !== 13) {
+          return;
+      }
+      const msg = document.getElementById(elem);
+      let v = msg.value.trim();
+      if (v === "" || v === null || v === false || !v) {
+         return; 
+      }
+      chatRoom[1].push({ admin: msg.value });
+       setRerender(!rerender);
+  }
 
   return (
     <>
@@ -20,7 +35,7 @@ const AdminChatRoomComponent = ({ chatRoom, roomIndex, socketUser }) => {
           <strong className="me-auto">Chat with User</strong>
         </Toast.Header>
         <Toast.Body>
-          <div style={{ maxHeight: "500px", overflow: "auto" }}>
+          <div className={`cht-msg${socketUser}`} style={{ maxHeight: "500px", overflow: "auto" }}>
             {chatRoom[1].map((msg, idx) => (
               <Fragment key={idx}>
                 {msg.client && (
@@ -43,12 +58,12 @@ const AdminChatRoomComponent = ({ chatRoom, roomIndex, socketUser }) => {
           <Form>
             <Form.Group
               className="mb-3"
-              controlId="exampleForm.ControlTextarea1"
+              controlId={`adminChatMsg${roomIndex}`}
             >
               <Form.Label>Write a message</Form.Label>
-              <Form.Control as="textarea" rows={2} />
+              <Form.Control onKeyUp={(e) => adminSubmitChatMsg(e, `adminChatMsg${roomIndex}`)} as="textarea" rows={2} />
             </Form.Group>
-            <Button variant="success" type="submit">
+            <Button onClick={(e) => adminSubmitChatMsg(e, `adminChatMsg${roomIndex}`)} variant="success" type="submit">
               Submit
             </Button>
           </Form>

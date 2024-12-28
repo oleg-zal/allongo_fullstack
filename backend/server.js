@@ -75,15 +75,23 @@ io.on("connection", (socket) => {
 
 const apiRoutes = require("./routes/apiRoutes");
 
-app.get("/", async (req, res, next) => {
-  res.json({ message: "API running..." });
-});
+
 
 // mongodb connection
 const connectDB = require("./config/db");
 connectDB();
 
 app.use("/api", apiRoutes);
+
+const path = require("path");
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../frontend/build")));
+    app.get("*", (req, res) => res.sendFile(path.resolve(__dirname, "../frontend", "build", "index.html")));
+} else {
+   app.get("/", (req,res) => {
+      res.json({ message: "API running..." }); 
+   }) 
+}
 
 app.use((error, req, res, next) => {
   if (process.env.NODE_ENV === "development") {

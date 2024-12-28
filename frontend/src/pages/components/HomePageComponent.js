@@ -9,13 +9,17 @@ const HomePageComponent = ({ categories, getBestsellers }) => {
   
     const [mainCategories, setMainCategories] = useState([]);
     const [bestSellers, setBestsellers] = useState([]);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         getBestsellers()
         .then((data) => {
             setBestsellers(data);
         })
-        .catch((er) => console.log(er.response.data.message ? er.response.data.message : er.response.data));
+        .catch((er) => {
+            setError(er.response.data.message ? er.response.data.message : er.response.data)
+           console.log(er.response.data.message ? er.response.data.message : er.response.data) 
+        });
         setMainCategories((cat) => categories.filter((item) => !item.name.includes("/")));
     }, [categories])
 
@@ -29,6 +33,7 @@ const HomePageComponent = ({ categories, getBestsellers }) => {
             <CategoryCardComponent key={idx} category={category} idx={idx} />
           ))}
         </Row>
+        {error}
       </Container>
     </>
   );
